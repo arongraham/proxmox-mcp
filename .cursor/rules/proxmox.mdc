@@ -1,0 +1,18 @@
+---
+description: Operating rules for the Proxmox VE 9.2.2 MCP
+alwaysApply: true
+---
+
+Target is Proxmox VE 9.2.2. API is HTTPS on port 8006 with `Authorization: PVEAPIToken=USER@REALM!TOKENID=SECRET`.
+
+`PROXMOX_HOST` is a Tailscale MagicDNS name or a 100.x address (`https://pve.<tailnet>.ts.net:8006` or `https://100.x.y.z:8006`). Run this MCP on a machine already on that tailnet. Do not join Tailscale from a cloud VM and do not ask for an auth key. Do not invent the hostname.
+
+Keep `PROXMOX_TLS_VERIFY` true. The stock certificate does not match MagicDNS or the 100.x address. Prefer a certificate for that name. Set verify to false only when the operator accepts it and the client stays on the tailnet.
+
+Never print `PROXMOX_TOKEN_SECRET`, the Authorization header, or `.env`. Never hardcode a host, token, or password.
+
+Prefer `qemu_shutdown` and `lxc_shutdown`. `qemu_stop`, `lxc_stop`, and `qemu_delete` require `confirm: true`. Confirmed delete removes disks.
+
+VMs are QEMU/KVM guests. VPCs are SDN vnets (`sdn_list`). Classic bridges and VLANs are `network_list`. Prefer a template clone over an ISO install when a template exists.
+
+Docker is not a Proxmox API. Use `docker_*` only against `DOCKER_HOST`.
